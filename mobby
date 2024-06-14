@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# if we want to grab, then git pr and set mob timer to 10 minutes
+if [ "$1" == "grab" ]; then
+  git pr
+  (sleep 600 && cowsay "Time to Switch" && say "mob done") &
+  exit
+fi
+
+# if we want to share, then git commit with a with and push
+if [ "$1" == "share" ]; then
+  git ci -am "WIP: $2"
+  git push
+  exit
+fi
