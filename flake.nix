@@ -10,7 +10,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
         pkg = pkgs.callPackage ./default.nix {};
       in {
-        overlay = final: prev: {
+        overlays.default = final: prev: {
           mobby = pkg;
         };
         packages.default = pkg;
