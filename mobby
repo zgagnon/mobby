@@ -15,4 +15,4 @@ if [ "$1" == "share" ]; then
   exit
 fi
 
-echo "Usage: mob.sh [grab|share]"
+echo "Usage: mobby [grab|share]"
