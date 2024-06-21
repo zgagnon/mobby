@@ -4,7 +4,7 @@
 if [ "$1" == "grab" ]; then
   git pull --rebase
   cowsay "Go Driver, Go!"
-  (sleep 600 && cowsay "Time to Switch" && say "mob done") &
+  (sleep 600 && cowsay "Time to Switch" && say "Time to switch") &
   exit
 fi
 
