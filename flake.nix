@@ -14,7 +14,7 @@
           final.mobby = prev.callPackage ./default.nix {};
         };
         packages.default = pkg;
-        devShells.default = pkgs.mkShell { buildInputs = [ pkgs.cowsay ]; };
+        devShells.default = pkgs.mkShell { buildInputs = [ ]; };
       }
     );
 }
