@@ -15,4 +15,32 @@ if [ "$1" == "share" ]; then
   exit
 fi
 
-echo "Usage: mobby [grab|share]"
+# if we want to rebase on main
+if [ "$1" == "remain" ]; then
+  git checkout main
+  git pull --rebase
+  git checkout -
+  git rebase main
+  git push --force-with-lease
+  exit
+fi
+
+#if we want to start a new branch
+if [ "$1" == "new" ]; then
+  git checkout -b $2
+  git push --set-upstream origin $2
+  exit
+fi
+
+#when we are done with the branch
+if [ "$1" == "finish" ]; then
+  git checkout main
+  git pull --rebase
+  git checkout -
+  git rebase main
+  git commit --allow-empty
+  git rebase -i main
+  exit
+fi
+
+echo "Usage: mobby [grab|share|remain|new|finish]"
