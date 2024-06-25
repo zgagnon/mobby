@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+usage="Usage:
+ mobby [grab|share|remain|new|finish]"
+# if no command, print usage
+if [ -z "${1+x}" ]; then
+  cowsay "$usage"
+  exit
+fi
 
 # if we want to grab, then git pr and set mob timer to 10 minutes
 if [ "$1" == "grab" ]; then
@@ -43,4 +50,4 @@ if [ "$1" == "finish" ]; then
   exit
 fi
 
-echo "Usage: mobby [grab|share|remain|new|finish]"
+cowsay "$usage"
