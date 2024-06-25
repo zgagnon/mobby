@@ -2,5 +2,5 @@
 pkgs.writeShellApplication {
           name = "mobby";
           runtimeInputs = [ pkgs.cowsay ];
-          text = ./mobby;
+          text = builtins.readFile ./mobby;
 }

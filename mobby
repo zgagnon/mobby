@@ -27,8 +27,8 @@ fi
 
 #if we want to start a new branch
 if [ "$1" == "new" ]; then
-  git checkout -b $2
-  git push --set-upstream origin $2
+  git checkout -b "$2"
+  git push --set-upstream origin "$2"
   exit
 fi
 
