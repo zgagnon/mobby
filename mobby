@@ -17,13 +17,18 @@ fi
 
 # if we want to share, then git commit with a with and push
 if [ "$1" == "share" ]; then
-  if [[ -v 2 ]]; then
-    git commit -am "WIP: $2"
-  else
-    git commit -am "WIP"
-  fi
-  git push
-  exit
+  top=$(git rev-parse --show-toplevel)
+  (
+    cd "$top" || exit
+    git add .
+    if [[ -v 2 ]]; then
+      git commit -am "WIP: $2"
+    else
+      git commit -am "WIP"
+    fi
+    git push
+    exit
+  )
 fi
 
 # if we want to rebase on main
