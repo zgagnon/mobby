@@ -17,7 +17,11 @@ fi
 
 # if we want to share, then git commit with a with and push
 if [ "$1" == "share" ]; then
-  git commit -am "WIP: $2"
+  if [[ -v 2 ]]; then
+    git commit -am "WIP: $2"
+  else
+    git commit -am "WIP"
+  fi
   git push
   exit
 fi
