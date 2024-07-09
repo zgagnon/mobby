@@ -1,6 +1,7 @@
 { stdenv, pkgs }:
 pkgs.writeShellApplication {
           name = "mobby";
-          runtimeInputs = [ pkgs.cowsay ];
+          runtimeInputs = with pkgs; [ cowsay argc ];
+
           text = builtins.readFile ./mobby;
 }

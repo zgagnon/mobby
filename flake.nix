@@ -14,7 +14,10 @@
           final.mobby = prev.callPackage ./default.nix {};
         };
         packages.default = pkg;
-        devShells.default = pkgs.mkShell { buildInputs = [ ]; };
+        devShells.default = pkgs.mkShell { buildInputs = with pkgs; [
+argc
+nixfmt
+        ]; };
       }
     );
 }

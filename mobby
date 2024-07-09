@@ -1,62 +1,98 @@
 #!/usr/bin/env bash
-usage="Usage:
- mobby [grab|share|remain|new|finish]"
-# if no command, print usage
-if [ -z "${1+x}" ]; then
-  cowsay "$usage"
-  exit
-fi
+argc_branch=""
+argc_message=""
 
-# if we want to grab, then git pr and set mob timer to 10 minutes
-if [ "$1" == "grab" ]; then
+set -euo pipefail
+
+perm_check() {
+  osascript -e 'tell application "System Events" to keystroke " "' > /dev/null 2>&1
+  perm_exit_code=$?
+}
+
+# @cmd Grab the latest changes from the remote, and set a timer to remind you to switch
+# @arg args~
+grab() {
   git pull --rebase
   cowsay "Go Driver, Go!"
   (sleep 600 && cowsay "Time to Switch" && say "Time to switch") &
-  exit
-fi
 
-# if we want to share, then git commit with a with and push
-if [ "$1" == "share" ]; then
+  perm_check
+  if [[ $perm_exit_code -eq 0 ]]; then
+    osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}'
+    osascript -e 'tell application "System Events" to key code 53' 2>/dev/null
+  fi
+}
+
+# @cmd add all changes, commit and push
+# @arg message! The commit message
+share() {
   top=$(git rev-parse --show-toplevel)
   (
     cd "$top" || exit
     git add .
     if [[ -v 2 ]]; then
-      git commit -am "WIP: $2"
+      git commit -am "WIP: $argc_message"
     else
       git commit -am "WIP"
     fi
     git push
-    exit
   )
-fi
+}
 
-# if we want to rebase on main
-if [ "$1" == "remain" ]; then
+# @cmd Rebase off of main. Make sure to have a clean workspace first
+# @arg args~
+remain() {
   git checkout main
   git pull --rebase
   git checkout -
   git rebase main
   git push --force-with-lease
-  exit
-fi
+}
 
+# @cmd start a new story branch
+# @arg branch! The branch name to use
 #if we want to start a new branch
-if [ "$1" == "new" ]; then
-  git checkout -b "$2"
-  git push --set-upstream origin "$2"
-  exit
-fi
+new() {
+  git checkout -b "$argc_branch"
+  git push --set-upstream origin "$argc_branch"
+}
 
+# @cmd finish a story branch: rebase on main, create a final commit message, then interactives rebase
+# @arg args~
 #when we are done with the branch
-if [ "$1" == "finish" ]; then
+finish() {
   git checkout main
   git pull --rebase
   git checkout -
   git rebase main
   git commit --allow-empty
   git rebase -i main
-  exit
-fi
+}
 
-cowsay "$usage"
+# @cmd check if mobby has permissions to control tuple
+# @arg args~
+doctor() {
+  # osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}'
+
+  perm_check
+
+  if [[ $perm_exit_code -eq 0 ]]; then
+    echo ""
+    echo "mobby has permissions to control tuple"
+  else
+    echo "Mobby does not have permissions to control tuple"
+    echo "If you would like to enable this, please grant permissions"
+    echo "in System Preferences -> Security & Privacy -> Accessibility"
+
+    echo "You must also set the keyboard shortcut '⌘⌥⇧F' for opening the tuple panel"
+  fi
+}
+
+# @cmd What is mobby?
+# @arg args~
+#when we want to understand how to use mobby
+help() {
+  echo "help"
+}
+
+eval "$(argc --argc-eval "${BASH_SOURCE[0]}" "$@")"
