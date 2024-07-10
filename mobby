@@ -25,13 +25,13 @@ grab() {
 }
 
 # @cmd add all changes, commit and push
-# @arg message! The commit message
+# @arg message The commit message
 share() {
   top=$(git rev-parse --show-toplevel)
   (
     cd "$top" || exit
     git add .
-    if [[ -v 2 ]]; then
+    if [ -n "$argc_message" ]; then
       git commit -am "WIP: $argc_message"
     else
       git commit -am "WIP"
