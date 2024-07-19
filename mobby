@@ -5,13 +5,18 @@ argc_message=""
 set -euo pipefail
 
 # @cmd Grab the latest changes from the remote, and set a timer to remind you to switch
-# @arg args~
+# @arg timeout=10 The time in minutes to wait before reminding you to switch
 grab() {
   osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' > /dev/null 2>&1
   osascript -e 'tell application "System Events" to keystroke "s"' > /dev/null 2>&1
-  git pull --rebase
-  (sleep 600 && cowsay "Time to Switch" && say "Time to switch") &
-  cowsay "Go Driver, Go!"
+  # git pull --rebase
+  seconds=$(($argc_timeout * 60)) 
+  (sleep $seconds && cowsay "Time to Switch" && say "Time to switch") &
+  cowsay <<- EOF
+	Go Driver, Go!
+	
+	You have $argc_timeout minutes left!
+EOF
 }
 
 # @cmd add all changes, commit and push
