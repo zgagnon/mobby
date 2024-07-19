@@ -18,9 +18,9 @@ grab() {
 
   perm_check
   if [[ $perm_exit_code -eq 0 ]]; then
-    osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}'
-    osascript -e 'tell application "System Events" to keystroke "s"'
-    osascript -e 'tell application "System Events" to key code 53' 2>/dev/null
+    osascript -e 'tell application "Tuple" to keystroke "f" using {shift down, command down, option down}'
+    osascript -e 'tell application "Tuple" to keystroke "s"'
+    osascript -e 'tell application "Tuple" to key code 53' 2>/dev/null
   fi
 }
 
