@@ -4,24 +4,14 @@ argc_message=""
 
 set -euo pipefail
 
-perm_check() {
-  osascript -e 'tell application "System Events" to keystroke " "' > /dev/null 2>&1
-  perm_exit_code=$?
-}
-
 # @cmd Grab the latest changes from the remote, and set a timer to remind you to switch
 # @arg args~
 grab() {
+  osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' > /dev/null 2>&1
+  osascript -e 'tell application "System Events" to keystroke "s"' > /dev/null 2>&1
   git pull --rebase
-  cowsay "Go Driver, Go!"
   (sleep 600 && cowsay "Time to Switch" && say "Time to switch") &
-
-  perm_check
-  if [[ $perm_exit_code -eq 0 ]]; then
-    osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}'
-    osascript -e 'tell application "System Events" to keystroke "s"'
-    osascript -e 'tell application "System Events" to key code 53' 2>/dev/null
-  fi
+  cowsay "Go Driver, Go!"
 }
 
 # @cmd add all changes, commit and push
