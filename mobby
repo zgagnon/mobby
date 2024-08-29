@@ -9,8 +9,10 @@ argc_timeout="arbitrary definition to make shellcheck happy"
 # @cmd Grab the latest changes from the remote, and set a timer to remind you to switch
 # @arg timeout=10 The time in minutes to wait before reminding you to switch
 grab() {
-  if [ -n "$MOBBY_DEFAULT_TIMEOUT" &&  "$argc_timeout" -ne 10]; then
-    argc_timeout=$MOBBY_DEFAULT_TIMEOUT
+  if [ -n "$MOBBY_DEFAULT_TIMEOUT" ]; then
+    if [ "$argc_timeout" -eq 10 ]; then
+      argc_timeout=$MOBBY_DEFAULT_TIMEOUT
+    fi
   fi
   osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' > /dev/null 2>&1
   osascript -e 'tell application "System Events" to keystroke "s"' > /dev/null 2>&1
