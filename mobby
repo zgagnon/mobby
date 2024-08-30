@@ -26,11 +26,11 @@ start() {
   fi
   seconds=$((argc_timeout * 60))
   (sleep $seconds && cowsay "Time to Switch" && say "Time to switch") &
-  cowsay <<-EOF
+  cowsay <<EOF
   Go Driver, Go!
 
   You have $argc_timeout minutes left!
-  EOF
+EOF
 }
 
 # @cmd add all changes, commit and push
