@@ -1,2 +1,4 @@
 .direnv/
 result
+node_modules
+build

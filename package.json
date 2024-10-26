@@ -1,0 +1,31 @@
+{
+  "name": "mobby",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "compile": "bun run tsc -b"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^18.19.59",
+    "bun-types": "^1.1.33",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "bin": {
+    "mobby": "./bin/run.js"
+  },
+  "oclif": {
+    "bin": "mobby",
+    "commands": "./dist/commands",
+    "dirname": "mobby",
+    "topicSeparator": " "
+  },
+  "dependencies": {
+    "@oclif/core": "^4.0.30"
+  }
+}
