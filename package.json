@@ -17,11 +17,11 @@
     "typescript": "^5.0.0"
   },
   "bin": {
-    "mobby": "./bin/run.js"
+    "mobby": "./mobby.ts"
   },
   "oclif": {
     "bin": "mobby",
-    "commands": "./dist/commands",
+    "commands": "./src/commands",
     "dirname": "mobby",
     "topicSeparator": " "
   },

@@ -5,8 +5,7 @@ export interface Config {
 export type PID = number
 
 export interface Collaborators {
-  timer: (timeout: number) => PID
-  message: (text: string) => void
+  timer: (message: string) => PID
 }
 
 interface Session {
@@ -14,15 +13,13 @@ interface Session {
   timer?: { pid: PID }
 }
 
-const starterMessage = (timeout: number) =>
+const starterMessage = (timeout: string) =>
   `Timer started. You have ${timeout} minutes. Go Driver, Go!`
 
 export const starter =
-  ({ timer, message }: Collaborators) =>
-  (config: Config): Session => {
-    const timerPid = timer(config.timeout)
-
-    message(starterMessage(config.timeout))
+  ({ timer }: Collaborators) =>
+  (timeout: string) => {
+    const timerPid = timer(starterMessage(timeout))
 
     return { active: true, timer: { pid: timerPid } }
   }

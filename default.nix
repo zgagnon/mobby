@@ -3,19 +3,18 @@ stdenv.mkDerivation {
   name = "mobby";
   src = ./.;
   buildInputs = [ pkgs.bun ];
-  runtimeInputs = with pkgs; [ bun ];
+  runtimeInputs = with pkgs; [ bun cowsay ];
 
   buildPhase = ''
     bun install
-    bun build src/mobby.ts \
-        --outdir ./build \
-        --target bun \
-        --entry-naming "[dir]/[name]"
   '';
   installPhase = ''
-        mkdir -p $out/bin
-        cp build/mobby $out/bin
+    mkdir -p $out/bin
+    cp mobby.ts $out/bin/mobby
+    cp package.json $out/bin
+    cp -r node_modules $out/bin
+    cp -r src $out/bin/src
     ls $out/bin
-        chmod +x $out/bin/mobby
+    chmod +x $out/bin/mobby
   '';
 }
