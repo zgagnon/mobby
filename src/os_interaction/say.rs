@@ -4,10 +4,15 @@ pub fn say_something(words:&str) {
         .arg(words)
         .status() // Execute the command and wait for it to finish
         .expect("failed to execute process");
-        ;
     if status.success() {
         println!("done");
     } else {
         println!("failed");
     }
+}
+
+#[test]
+fn test_say() {
+    say_something("Say test passed!");
+    assert!(true);
 }

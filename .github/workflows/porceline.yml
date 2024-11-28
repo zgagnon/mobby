@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - porceline
+
+jobs:
+  nix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Cache Nix
+        uses: nix-community/nix-magic-cache@v1
+
+      # Your Nix build steps
+      - name: Build with Nix
+        run: |
+          nix-build

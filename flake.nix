@@ -19,12 +19,18 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         pkg = pkgs.callPackage ./default.nix { };
-        naersk' = pkgs.callPackage naersk {};
+        naersk' = pkgs.callPackage naersk { };
       in
       {
         overlay.default = final: prev: { final.mobby = prev.callPackage ./default.nix { }; };
         defaultPackage = naersk'.buildPackage {
+          buildInputs = with pkgs; [ openssl ];
           src = ./.;
+          OPENSSL_DIR = "${pkgs.openssl.dev}";
+          OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
+          OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [ pkgs.openssl ]}";
+          LIBRARY_PATH = "$LIBRARY_PATH:${pkgs.darwin.apple_sdk.frameworks.Security}/Library/Frameworks";
         };
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
