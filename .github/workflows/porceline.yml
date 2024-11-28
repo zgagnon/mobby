@@ -7,17 +7,15 @@ on:
 
 jobs:
   nix:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - uses: DeterminateSystems/nix-installer-action@main
-      - name: Cache Nix
-        uses: nix-community/nix-magic-cache@v1
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       # Your Nix build steps
       - name: Build with Nix
-        run: |
-          nix-build
+        run: nix build

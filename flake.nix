@@ -18,11 +18,9 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        pkg = pkgs.callPackage ./default.nix { };
         naersk' = pkgs.callPackage naersk { };
       in
       {
-        overlay.default = final: prev: { final.mobby = prev.callPackage ./default.nix { }; };
         defaultPackage = naersk'.buildPackage {
           buildInputs = with pkgs; [ openssl ];
           src = ./.;
