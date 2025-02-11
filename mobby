@@ -15,12 +15,13 @@ grab() {
     osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' >/dev/null 2>&1
     osascript -e 'tell application "System Events" to keystroke "s"' >/dev/null 2>&1
 
-    if [ -d ".git" ]; then
-        git pull --rebase
-    elif [ -d ".jj" ]; then
+    if [ -d ".jj" ]; then
         branch_name=$(<.mobby)
         jj fetch
         jj new "$branch_name"
+
+    elif [ -d ".git" ]; then
+        git pull --rebase
     else
         echo "No recognized version control system found."
         exit 1
@@ -50,7 +51,16 @@ share() {
     top=$(git rev-parse --show-toplevel)
     (
         cd "$top" || exit
-        if [ -d ".git" ]; then
+        if [ -d ".jj" ]; then
+            branch_name=$(<.mobby)
+            if [ -n "$argc_message" ]; then
+                jj describe -m "WIP: $argc_message"
+            else
+                jj describe -m "WIP"
+            fi
+            jj bookmark move "$current_branch"
+            jj git push
+        elif [ -d ".git" ]; then
             # Create .mobby file with current branch name
             current_branch=$(git rev-parse --abbrev-ref HEAD)
             echo "$current_branch" >.mobby
@@ -61,15 +71,6 @@ share() {
                 git commit -am "WIP"
             fi
             git push
-        elif [ -d ".jj" ]; then
-            branch_name=$(<.mobby)
-            if [ -n "$argc_message" ]; then
-                jj describe -m "WIP: $argc_message"
-            else
-                jj describe -m "WIP"
-            fi
-            jj bookmark move "$current_branch"
-            jj git push
         else
             echo "No recognized version control system found."
             exit 1
