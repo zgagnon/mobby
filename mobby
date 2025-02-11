@@ -78,6 +78,17 @@ share() {
     )
 }
 
+# @cmd Show the current branch from the .mobby file
+branch() {
+    if [ -f ".mobby" ]; then
+        current_branch=$(<.mobby)
+        echo "Current branch: $current_branch"
+    else
+        echo ".mobby file not found."
+        exit 1
+    fi
+}
+
 # @cmd Rebase off of main. Make sure to have a clean workspace first
 # @arg args~
 remain() {
