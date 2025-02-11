@@ -9,24 +9,35 @@ argc_timeout="arbitrary definition to make shellcheck happy"
 # @cmd Grab the latest changes from the remote, and set a timer to remind you to switch
 # @arg timeout=10 The time in minutes to wait before reminding you to switch
 grab() {
-  if [ "$argc_timeout" -eq 10 ]; then
-    argc_timeout="${MOBBY_DEFAULT_TIMEOUT:-10}"
-  fi
-  osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' >/dev/null 2>&1
-  osascript -e 'tell application "System Events" to keystroke "s"' >/dev/null 2>&1
-  git pull --rebase
-  start
+    if [ "$argc_timeout" -eq 10 ]; then
+        argc_timeout="${MOBBY_DEFAULT_TIMEOUT:-10}"
+    fi
+    osascript -e 'tell application "System Events" to keystroke "f" using {shift down, command down, option down}' >/dev/null 2>&1
+    osascript -e 'tell application "System Events" to keystroke "s"' >/dev/null 2>&1
+
+    if [ -d ".git" ]; then
+        git pull --rebase
+    elif [ -d ".jj" ]; then
+        branch_name=$(<.mobby)
+        jj fetch
+        jj new "$branch_name"
+    else
+        echo "No recognized version control system found."
+        exit 1
+    fi
+
+    start
 }
 
 # @cmd Start the timer without doing anything else
 # @arg timeout=10 The time in minutes to wait before reminding you to switch
 start() {
-  if [ "$argc_timeout" -eq 10 ]; then
-    argc_timeout="${MOBBY_DEFAULT_TIMEOUT:-10}"
-  fi
-  seconds=$((argc_timeout * 60))
-  (sleep $seconds && cowsay "Time to Switch" && say "Time to switch") &
-  cowsay <<EOF
+    if [ "$argc_timeout" -eq 10 ]; then
+        argc_timeout="${MOBBY_DEFAULT_TIMEOUT:-10}"
+    fi
+    seconds=$((argc_timeout * 60))
+    (sleep $seconds && cowsay "Time to Switch" && say "Time to switch") &
+    cowsay <<EOF
   Go Driver, Go!
 
   You have $argc_timeout minutes left!
@@ -36,54 +47,71 @@ EOF
 # @cmd add all changes, commit and push
 # @arg message The commit message
 share() {
-  top=$(git rev-parse --show-toplevel)
-  (
-    cd "$top" || exit
-    git add .
-    if [ -n "$argc_message" ]; then
-      git commit -am "WIP: $argc_message"
-    else
-      git commit -am "WIP"
-    fi
-    git push
-  )
+    top=$(git rev-parse --show-toplevel)
+    (
+        cd "$top" || exit
+        if [ -d ".git" ]; then
+            # Create .mobby file with current branch name
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            echo "$current_branch" >.mobby
+            git add .
+            if [ -n "$argc_message" ]; then
+                git commit -am "WIP: $argc_message"
+            else
+                git commit -am "WIP"
+            fi
+            git push
+        elif [ -d ".jj" ]; then
+            branch_name=$(<.mobby)
+            if [ -n "$argc_message" ]; then
+                jj describe -m "WIP: $argc_message"
+            else
+                jj describe -m "WIP"
+            fi
+            jj bookmark move "$current_branch"
+            jj git push
+        else
+            echo "No recognized version control system found."
+            exit 1
+        fi
+    )
 }
 
 # @cmd Rebase off of main. Make sure to have a clean workspace first
 # @arg args~
 remain() {
-  git checkout main
-  git pull --rebase
-  git checkout -
-  git rebase main
-  git push --force-with-lease
+    git checkout main
+    git pull --rebase
+    git checkout -
+    git rebase main
+    git push --force-with-lease
 }
 
 # @cmd start a new story branch and push it to the remote
 # @arg branch! The branch name to use
 #if we want to start a new branch
 new() {
-  git checkout -b "$argc_branch"
-  git push --set-upstream origin "$argc_branch"
+    git checkout -b "$argc_branch"
+    git push --set-upstream origin "$argc_branch"
 }
 
 # @cmd finish a story branch: rebase on main, create a final commit message, then interactives rebase
 # @arg args~
 #when we are done with the branch
 finish() {
-  git checkout main
-  git pull --rebase
-  git checkout -
-  git rebase main
-  git commit --allow-empty
-  git rebase -i main
+    git checkout main
+    git pull --rebase
+    git checkout -
+    git rebase main
+    git commit --allow-empty
+    git rebase -i main
 }
 
 # @cmd What is mobby?
 # @arg args~
 #when we want to understand how to use mobby
 help() {
-  echo "help"
+    echo "help"
 }
 
 eval "$(argc --argc-eval "${BASH_SOURCE[0]}" "$@")"
